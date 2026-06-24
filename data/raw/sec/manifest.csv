@@ -1,0 +1,26 @@
+company,ticker,cik,form,fiscal_year,filing_date,report_date,accession,source_url,local_path
+Delta Air Lines,DAL,0000027904,10-K,2025,2026-02-11,2025-12-31,0000027904-26-000013,https://www.sec.gov/Archives/edgar/data/27904/000002790426000013/dal-20251231.htm,data\raw\sec\DAL\DAL_10-K_2025.htm
+Delta Air Lines,DAL,0000027904,10-K,2024,2025-02-11,2024-12-31,0000027904-25-000004,https://www.sec.gov/Archives/edgar/data/27904/000002790425000004/dal-20241231.htm,data\raw\sec\DAL\DAL_10-K_2024.htm
+Delta Air Lines,DAL,0000027904,10-K,2023,2024-02-12,2023-12-31,0000027904-24-000003,https://www.sec.gov/Archives/edgar/data/27904/000002790424000003/dal-20231231.htm,data\raw\sec\DAL\DAL_10-K_2023.htm
+Delta Air Lines,DAL,0000027904,10-K,2022,2023-02-10,2022-12-31,0000027904-23-000003,https://www.sec.gov/Archives/edgar/data/27904/000002790423000003/dal-20221231.htm,data\raw\sec\DAL\DAL_10-K_2022.htm
+Delta Air Lines,DAL,0000027904,10-K,2021,2022-02-11,2021-12-31,0000027904-22-000003,https://www.sec.gov/Archives/edgar/data/27904/000002790422000003/dal-20211231.htm,data\raw\sec\DAL\DAL_10-K_2021.htm
+United Airlines Holdings,UAL,0000100517,10-K,2025,2026-02-12,2025-12-31,0000100517-26-000023,https://www.sec.gov/Archives/edgar/data/100517/000010051726000023/ual-20251231.htm,data\raw\sec\UAL\UAL_10-K_2025.htm
+United Airlines Holdings,UAL,0000100517,10-K,2024,2025-02-27,2024-12-31,0000100517-25-000046,https://www.sec.gov/Archives/edgar/data/100517/000010051725000046/ual-20241231.htm,data\raw\sec\UAL\UAL_10-K_2024.htm
+United Airlines Holdings,UAL,0000100517,10-K,2023,2024-02-29,2023-12-31,0000100517-24-000027,https://www.sec.gov/Archives/edgar/data/100517/000010051724000027/ual-20231231.htm,data\raw\sec\UAL\UAL_10-K_2023.htm
+United Airlines Holdings,UAL,0000100517,10-K,2022,2023-02-16,2022-12-31,0000100517-23-000048,https://www.sec.gov/Archives/edgar/data/100517/000010051723000048/ual-20221231.htm,data\raw\sec\UAL\UAL_10-K_2022.htm
+United Airlines Holdings,UAL,0000100517,10-K,2021,2022-02-18,2021-12-31,0000100517-22-000009,https://www.sec.gov/Archives/edgar/data/100517/000010051722000009/ual-20211231.htm,data\raw\sec\UAL\UAL_10-K_2021.htm
+American Airlines Group,AAL,0000006201,10-K,2025,2026-02-18,2025-12-31,0000006201-26-000014,https://www.sec.gov/Archives/edgar/data/6201/000000620126000014/aal-20251231.htm,data\raw\sec\AAL\AAL_10-K_2025.htm
+American Airlines Group,AAL,0000006201,10-K,2024,2025-02-19,2024-12-31,0000006201-25-000010,https://www.sec.gov/Archives/edgar/data/6201/000000620125000010/aal-20241231.htm,data\raw\sec\AAL\AAL_10-K_2024.htm
+American Airlines Group,AAL,0000006201,10-K,2023,2024-02-21,2023-12-31,0000006201-24-000010,https://www.sec.gov/Archives/edgar/data/6201/000000620124000010/aal-20231231.htm,data\raw\sec\AAL\AAL_10-K_2023.htm
+American Airlines Group,AAL,0000006201,10-K,2022,2023-02-22,2022-12-31,0000006201-23-000018,https://www.sec.gov/Archives/edgar/data/6201/000000620123000018/aal-20221231.htm,data\raw\sec\AAL\AAL_10-K_2022.htm
+American Airlines Group,AAL,0000006201,10-K,2021,2022-02-22,2021-12-31,0000006201-22-000026,https://www.sec.gov/Archives/edgar/data/6201/000000620122000026/aal-20211231.htm,data\raw\sec\AAL\AAL_10-K_2021.htm
+Southwest Airlines,LUV,0000092380,10-K,2025,2026-02-05,2025-12-31,0000092380-26-000004,https://www.sec.gov/Archives/edgar/data/92380/000009238026000004/luv-20251231.htm,data\raw\sec\LUV\LUV_10-K_2025.htm
+Southwest Airlines,LUV,0000092380,10-K,2024,2025-02-07,2024-12-31,0000092380-25-000024,https://www.sec.gov/Archives/edgar/data/92380/000009238025000024/luv-20241231.htm,data\raw\sec\LUV\LUV_10-K_2024.htm
+Southwest Airlines,LUV,0000092380,10-K,2023,2024-02-06,2023-12-31,0000092380-24-000027,https://www.sec.gov/Archives/edgar/data/92380/000009238024000027/luv-20231231.htm,data\raw\sec\LUV\LUV_10-K_2023.htm
+Southwest Airlines,LUV,0000092380,10-K,2022,2023-02-07,2022-12-31,0000092380-23-000010,https://www.sec.gov/Archives/edgar/data/92380/000009238023000010/luv-20221231.htm,data\raw\sec\LUV\LUV_10-K_2022.htm
+Southwest Airlines,LUV,0000092380,10-K,2021,2022-02-07,2021-12-31,0000092380-22-000007,https://www.sec.gov/Archives/edgar/data/92380/000009238022000007/luv-20211231.htm,data\raw\sec\LUV\LUV_10-K_2021.htm
+Alaska Air Group,ALK,0000766421,10-K,2025,2026-02-12,2025-12-31,0000766421-26-000010,https://www.sec.gov/Archives/edgar/data/766421/000076642126000010/alk-20251231.htm,data\raw\sec\ALK\ALK_10-K_2025.htm
+Alaska Air Group,ALK,0000766421,10-K,2024,2025-02-14,2024-12-31,0000766421-25-000009,https://www.sec.gov/Archives/edgar/data/766421/000076642125000009/alk-20241231.htm,data\raw\sec\ALK\ALK_10-K_2024.htm
+Alaska Air Group,ALK,0000766421,10-K,2023,2024-02-14,2023-12-31,0000766421-24-000012,https://www.sec.gov/Archives/edgar/data/766421/000076642124000012/alk-20231231.htm,data\raw\sec\ALK\ALK_10-K_2023.htm
+Alaska Air Group,ALK,0000766421,10-K,2022,2023-02-13,2022-12-31,0000766421-23-000009,https://www.sec.gov/Archives/edgar/data/766421/000076642123000009/alk-20221231.htm,data\raw\sec\ALK\ALK_10-K_2022.htm
+Alaska Air Group,ALK,0000766421,10-K,2021,2022-02-11,2021-12-31,0000766421-22-000009,https://www.sec.gov/Archives/edgar/data/766421/000076642122000009/alk-20211231.htm,data\raw\sec\ALK\ALK_10-K_2021.htm

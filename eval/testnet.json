@@ -1,0 +1,38 @@
+[
+  {
+    "question": "What did Delta say about its fuel hedging strategy and fuel price risk?",
+    "company": "DAL",
+    "year": 2024,
+    "reference": "Delta describes managing jet fuel price risk, noting fuel is one of its largest operating expenses and that it may use its refinery and other measures rather than a traditional fuel hedging program to manage exposure to fuel price volatility."
+  },
+  {
+    "question": "What does United disclose about the size and composition of its aircraft fleet?",
+    "company": "UAL",
+    "year": 2024,
+    "reference": "United describes operating a mainline fleet of several hundred aircraft from Boeing and Airbus, supplemented by regional aircraft flown by regional carriers, and discusses planned deliveries and fleet modernization."
+  },
+  {
+    "question": "How does Delta describe its liquidity and available sources of cash?",
+    "company": "DAL",
+    "year": 2024,
+    "reference": "Delta describes its liquidity position in terms of cash and cash equivalents, short-term investments, and undrawn revolving credit facilities, and discusses using cash flow from operations to fund operations and reduce debt."
+  },
+  {
+    "question": "What does American Airlines say about labor and collective bargaining agreements?",
+    "company": "AAL",
+    "year": 2024,
+    "reference": "American discloses that a large majority of its employees are represented by unions under collective bargaining agreements, and identifies the risk of work disruptions and cost increases associated with negotiating amendable agreements."
+  },
+  {
+    "question": "What competitive risks does Southwest identify in its business?",
+    "company": "LUV",
+    "year": 2024,
+    "reference": "Southwest identifies intense competition in the airline industry, including price competition, capacity decisions by competitors, low-cost carriers, and the effect of fare transparency, as risks to its revenue and margins."
+  },
+  {
+    "question": "How does Delta describe revenue from its loyalty program?",
+    "company": "DAL",
+    "year": 2024,
+    "reference": "Delta describes its SkyMiles loyalty program and its co-branded credit card agreement with American Express as significant sources of revenue, with miles sold to program partners recognized as revenue over time."
+  }
+]
