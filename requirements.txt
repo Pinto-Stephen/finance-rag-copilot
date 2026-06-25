@@ -1,18 +1,28 @@
-
+# --- LlamaIndex (split-package layout, >=0.10) ---
 llama-index-core~=0.14.22
 llama-index-readers-file
 llama-index-embeddings-huggingface
-sentence-transformers
 llama-index-vector-stores-qdrant
-qdrant-client
 llama-index-llms-groq
-llama-index-retrievers-bm25
-llama-index-postprocessor-cohere-rerank
-ragas
+llama-index-retrievers-bm25          # sparse leg of hybrid retrieval
+
+# --- Embeddings / reranker / vector store ---
+sentence-transformers
+qdrant-client
+
+# --- LangChain stack (agent + RAGAS judge) ---
+langchain-groq                       # ChatGroq (agent + eval judge)
+langchain-huggingface                # HuggingFaceEmbeddings (eval embeddings)
+langchain-openai                     # imported transitively by ragas
+langgraph                            # create_react_agent
+langsmith                            # auto-tracing for the agent
+
+# --- Evaluation ---
+ragas==0.4.3
+
+# --- App / IO ---
 streamlit
 python-dotenv
 pypdf
-langgraph
-langsmith
 lxml
 beautifulsoup4~=4.15.0

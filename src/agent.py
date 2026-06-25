@@ -1,18 +1,3 @@
-"""
-agent.py — OPTIONAL agentic layer (Phase 8 stretch).
-
-Wraps the RAG pipeline as a tool and lets a LangGraph ReAct agent decide when,
-and how many times, to call it. This turns single-shot Q&A into multi-step work:
-"Compare Delta's and United's fuel hedging in 2024" becomes two scoped tool calls
-(DAL 2024, UAL 2024) that the agent then synthesizes into one answer.
-
-This is also where LangSmith tracing finally lights up — the agent runs through
-LangChain/LangGraph, which LangSmith auto-traces (pure LlamaIndex did not).
-
-Run from project root:
-    python -m src.agent
-"""
-
 from dotenv import load_dotenv
 from langchain_core.tools import tool
 from langchain_groq import ChatGroq
@@ -21,24 +6,6 @@ from src.retrieve import load_index
 from src.generate import answer, MODEL
 
 load_dotenv()
-_index = load_index()
-
-
-@tool
-def query_filings(question: str, company: str = "", year: int = 0) -> str:
-    """Answer a question from the airline 10-K filings.
-
-    Use `company` (ticker: DAL, UAL, AAL, LUV, ALK) and/or `year` (e.g. 2024) to
-    scope the search to a single filing. Call this once per (company, year) you
-    need; for a comparison, call it multiple times and combine the results.
-    """
-    text, _ = answer(
-        question,
-        _index,
-        company=company or None,   # empty string -> no filter
-        year=year or None,         # 0 -> no filter
-    )
-    return text
 
 
 SYSTEM_PROMPT = (
@@ -50,13 +17,39 @@ SYSTEM_PROMPT = (
     "result says it doesn't know, report that rather than guessing."
 )
 
-_llm = ChatGroq(model=MODEL, temperature=0)
-_agent = create_react_agent(_llm, tools=[query_filings], prompt=SYSTEM_PROMPT)
+
+def build_agent(index):
+    """Create a ReAct agent whose query_filings tool runs against `index`."""
+
+    @tool
+    def query_filings(question: str, company: str = "", year: int = 0) -> str:
+        """Answer a question from the airline 10-K filings.
+
+        Use `company` (ticker: DAL, UAL, AAL, LUV, ALK) and/or `year` (e.g. 2024) to
+        scope the search to a single filing. Call this once per (company, year) you
+        need; for a comparison, call it multiple times and combine the results.
+        """
+        text, _ = answer(
+            question,
+            index,
+            company=company or None,   # empty string -> no filter
+            year=year or None,         # 0 -> no filter
+        )
+        return text
+
+    llm = ChatGroq(model=MODEL, temperature=0)
+    return create_react_agent(llm, tools=[query_filings], prompt=SYSTEM_PROMPT)
 
 
-def ask(question: str) -> str:
-    """Run the agent on a question and return its final text answer."""
-    result = _agent.invoke({"messages": [{"role": "user", "content": question}]})
+def ask(question: str, index=None, agent=None) -> str:
+    """Run the agent on a question and return its final text answer.
+
+    Pass `agent` (built once via build_agent) to reuse it; otherwise an index is
+    loaded and an agent is built on the fly for standalone/CLI use.
+    """
+    if agent is None:
+        agent = build_agent(index if index is not None else load_index())
+    result = agent.invoke({"messages": [{"role": "user", "content": question}]})
     return result["messages"][-1].content
 
 

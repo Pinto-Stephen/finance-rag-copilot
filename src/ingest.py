@@ -28,12 +28,29 @@ warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 
 
 
+# 10-Ks are inline-XBRL: a big block of machine-readable facts (contexts, units,
+# dimension members like "us-gaap:FairValueMeasurementsRecurringMember", CIKs and
+# period dates) is embedded in the page header. get_text() would otherwise pull all
+# of that tag-soup into the corpus and bloat retrieval. We drop those metadata
+# blocks but keep the inline <ix:nonFraction>/<ix:nonNumeric> wrappers, because
+# those hold the *visible* reported numbers and narrative.
+_XBRL_NOISE_TAGS = {
+    "script", "style", "head",
+    "ix:header", "ix:hidden", "ix:references", "ix:resources",
+}
+
+
 class HTMLTextReader(BaseReader):
-    """Strip a 10-K's HTML/XBRL down to readable text."""
+    """Strip a 10-K's HTML/inline-XBRL down to readable narrative text."""
 
     def load_data(self, file, extra_info=None):
         html = Path(file).read_text(encoding="utf-8", errors="ignore")
-        text = BeautifulSoup(html, "lxml").get_text(separator="\n")
+        soup = BeautifulSoup(html, "lxml")
+        for tag in soup.find_all(
+            lambda t: t.name and t.name.lower() in _XBRL_NOISE_TAGS
+        ):
+            tag.decompose()
+        text = soup.get_text(separator="\n")
         text = "\n".join(ln.strip() for ln in text.splitlines() if ln.strip())
         return [Document(text=text, metadata=extra_info or {})]
 

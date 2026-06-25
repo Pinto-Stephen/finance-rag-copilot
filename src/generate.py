@@ -5,10 +5,13 @@ from llama_index.core.llms import ChatMessage, MessageRole
 from llama_index.llms.groq import Groq
 
 from src.retrieve import load_index, retrieve
+from config.settings import LLM_MODEL
 
 load_dotenv()
 
-MODEL = "openai/gpt-oss-120b"
+# Single source of truth lives in config.settings; re-exported as MODEL so
+# agent.py and eval/run_eval.py keep importing it from here.
+MODEL = LLM_MODEL
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 if not GROQ_API_KEY:

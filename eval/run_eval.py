@@ -21,7 +21,20 @@ Run from project root:
 """
 
 import json
+import sys
+import types
 from pathlib import Path
+
+# ragas 0.4.x hard-imports `langchain_community.chat_models.vertexai.ChatVertexAI`
+# at package init, but langchain-community 0.4.x (required by the langchain 1.x
+# stack langgraph/langchain-groq depend on) removed that module. Our judge is Groq,
+# so Vertex AI is never used — register a harmless stub so the import resolves.
+try:
+    import langchain_community.chat_models.vertexai  # noqa: F401
+except ModuleNotFoundError:
+    _stub = types.ModuleType("langchain_community.chat_models.vertexai")
+    _stub.ChatVertexAI = type("ChatVertexAI", (), {})
+    sys.modules["langchain_community.chat_models.vertexai"] = _stub
 
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq

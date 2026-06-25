@@ -1,10 +1,15 @@
+from pathlib import Path
 
-DEFAULT_DATA_DIR = "C:/Users/steph/PycharmProjects/finance-rag-copilot/data/raw/sec"
-QDRANT_PATH = "storage/qdrant"
+# Resolve everything relative to the project root (this file lives in config/),
+# so the app works no matter which directory you launch it from.
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+DEFAULT_DATA_DIR = str(PROJECT_ROOT / "data" / "raw" / "sec")
+QDRANT_PATH      = str(PROJECT_ROOT / "storage" / "qdrant")
 
 EMBED_MODEL  = "BAAI/bge-m3"
 RERANK_MODEL = "BAAI/bge-reranker-v2-m3"
-LLM_MODEL    = "llama-3.3-70b-versatile"   # Groq
+LLM_MODEL    = "openai/gpt-oss-120b"        # Groq; single source of truth
 
 COLLECTION = "airline_10k"
 
