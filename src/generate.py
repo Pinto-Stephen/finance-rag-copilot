@@ -5,7 +5,7 @@ from llama_index.core.llms import ChatMessage, MessageRole
 from llama_index.llms.groq import Groq
 
 from src.retrieve import load_index, retrieve
-from config.settings import LLM_MODEL, DEFAULT_CORPUS
+from config.settings import LLM_MODEL, DEFAULT_CORPUS, CORPORA
 
 load_dotenv()
 
@@ -20,23 +20,68 @@ if not GROQ_API_KEY:
 # temperature=0 keeps answers deterministic and minimizes hallucination for a fact-extraction task.
 llm = Groq(model=MODEL, api_key=GROQ_API_KEY, temperature=0)
 
-SYSTEM_PROMPT = (
-    "You are a financial research assistant answering questions about US airline "
-    "10-K filings. Follow these rules strictly:\n"
-    "1. Answer ONLY using the provided context. Never use outside knowledge.\n"
-    "2. Cite the source filing for every claim using its [TICKER YEAR] tag.\n"
-    "3. If the context does not contain the answer, say you don't know — do not guess.\n"
-    "4. Be concise and factual."
-)
+# Per-corpus prompt framing. Only the human-readable wording changes per corpus — the
+# citation *mechanism* (format_context's bracketed tags) is untouched; `tag` here just
+# mirrors what those tags look like so the model echoes them. SEC's values reproduce the
+# original prompt BYTE-FOR-BYTE (backward-compat is a hard requirement); NASA/RBI get
+# corpus-appropriate framing. Keyed by the same corpus keys as config.settings.CORPORA.
+_FRAMING = {
+    "sec": {
+        "assistant": "financial research assistant",
+        "docs": "US airline 10-K filings",
+        "docs_short": "10-K filings",
+        "source": "source filing",
+        "tag": "[TICKER YEAR]",
+    },
+    "nasa": {
+        "assistant": "research assistant",
+        "docs": "NASA technical reports",
+        "docs_short": "NASA technical reports",
+        "source": "source report",
+        "tag": "[NASA TR ...]",
+    },
+    "rbi": {
+        "assistant": "research assistant",
+        "docs": "RBI circulars",
+        "docs_short": "RBI circulars",
+        "source": "source circular",
+        "tag": "[RBI — ...]",
+    },
+}
+assert set(_FRAMING) == set(CORPORA), "prompt framing must cover exactly the CORPORA keys"
 
-PROMPT_TEMPLATE = (
-    "Context from 10-K filings:\n"
-    "========================\n"
-    "{context}\n"
-    "========================\n\n"
-    "Question: {question}\n\n"
-    "Answer (cite each claim as [TICKER YEAR]):"
-)
+
+def _system_prompt(corpus=DEFAULT_CORPUS):
+    """Build the system prompt for `corpus`. SEC's output is byte-identical to the
+    original hardcoded prompt; other corpora swap in their own framing."""
+    f = _FRAMING[corpus]
+    return (
+        f"You are a {f['assistant']} answering questions about {f['docs']}. "
+        "Follow these rules strictly:\n"
+        "1. Answer ONLY using the provided context. Never use outside knowledge.\n"
+        f"2. Cite the {f['source']} for every claim using its {f['tag']} tag.\n"
+        "3. If the context does not contain the answer, say you don't know — do not guess.\n"
+        "4. Be concise and factual."
+    )
+
+
+def _prompt_template(corpus=DEFAULT_CORPUS):
+    """Build the user-prompt template for `corpus` (keeps {context}/{question}
+    placeholders for the later .format()). SEC's output is byte-identical."""
+    f = _FRAMING[corpus]
+    return (
+        f"Context from {f['docs_short']}:\n"
+        "========================\n"
+        "{context}\n"
+        "========================\n\n"
+        "Question: {question}\n\n"
+        f"Answer (cite each claim as {f['tag']}):"
+    )
+
+
+# Module-level SEC prompts, kept for back-compat / byte-identity checks.
+SYSTEM_PROMPT = _system_prompt(DEFAULT_CORPUS)
+PROMPT_TEMPLATE = _prompt_template(DEFAULT_CORPUS)
 
 
 def format_context(nodes, corpus=DEFAULT_CORPUS):
@@ -63,9 +108,11 @@ def answer(question, index, corpus=DEFAULT_CORPUS, company=None, year=None):
     if not nodes:
         return "No relevant filings found for that scope.", []
 
-    prompt = PROMPT_TEMPLATE.format(context=format_context(nodes, corpus), question=question)
+    prompt = _prompt_template(corpus).format(
+        context=format_context(nodes, corpus), question=question
+    )
     messages = [
-        ChatMessage(role=MessageRole.SYSTEM, content=SYSTEM_PROMPT),
+        ChatMessage(role=MessageRole.SYSTEM, content=_system_prompt(corpus)),
         ChatMessage(role=MessageRole.USER, content=prompt),
     ]
     response = llm.chat(messages)
