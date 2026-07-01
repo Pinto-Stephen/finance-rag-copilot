@@ -4,6 +4,7 @@ from langchain_groq import ChatGroq
 from langgraph.prebuilt import create_react_agent
 from src.retrieve import load_index
 from src.generate import answer, MODEL
+from config.settings import DEFAULT_CORPUS
 
 load_dotenv()
 
@@ -18,8 +19,10 @@ SYSTEM_PROMPT = (
 )
 
 
-def build_agent(index):
-    """Create a ReAct agent whose query_filings tool runs against `index`."""
+def build_agent(index, corpus=DEFAULT_CORPUS):
+    """Create a ReAct agent whose query_filings tool runs against `index`, scoped to
+    `corpus` (bound here so agent mode respects the UI's corpus selector). `index` and
+    `corpus` must refer to the same corpus."""
 
     @tool
     def query_filings(question: str, company: str = "", year: int = 0) -> str:
@@ -32,6 +35,7 @@ def build_agent(index):
         text, _ = answer(
             question,
             index,
+            corpus=corpus,
             company=company or None,   # empty string -> no filter
             year=year or None,         # 0 -> no filter
         )
