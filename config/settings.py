@@ -5,13 +5,24 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 DEFAULT_DATA_DIR = str(PROJECT_ROOT / "data" / "raw" / "sec")
+NASA_DATA_DIR    = str(PROJECT_ROOT / "data" / "raw" / "nasa")
+RBI_DATA_DIR     = str(PROJECT_ROOT / "data" / "raw" / "rbi")
 QDRANT_PATH      = str(PROJECT_ROOT / "storage" / "qdrant")
 
 EMBED_MODEL  = "BAAI/bge-m3"
 RERANK_MODEL = "BAAI/bge-reranker-v2-m3"
 LLM_MODEL    = "openai/gpt-oss-120b"        # Groq; single source of truth
 
-COLLECTION = "airline_10k"
+COLLECTION = "airline_10k"        # kept for back-compat (== CORPORA["sec"]["collection"])
+
+# Each corpus lives in its own data dir and its own Qdrant collection (locked design
+# decision: separate collections, never merged). index_build.py and the ingest layer
+# resolve everything through this registry so a new corpus is one entry, not a rewrite.
+CORPORA = {
+    "sec":  {"data_dir": DEFAULT_DATA_DIR, "collection": COLLECTION},
+    "nasa": {"data_dir": NASA_DATA_DIR,    "collection": "nasa_reports"},
+    "rbi":  {"data_dir": RBI_DATA_DIR,     "collection": "rbi_circulars"},
+}
 
 CHUNK_SIZE     = 512
 CHUNK_OVERLAP  = 64
