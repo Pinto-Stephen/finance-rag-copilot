@@ -1,0 +1,185 @@
+[
+  {
+    "corpus": "sec",
+    "question": "What did Delta say about its fuel hedging strategy and fuel price risk?",
+    "company": "DAL",
+    "year": 2024,
+    "reference": "Delta manages its exposure to jet fuel price volatility largely through its wholly-owned Monroe Energy subsidiary, which operates the Trainer refinery near Philadelphia and produces jet fuel and other refined products; its results reflect fuel hedge activity together with refinery segment results, and the refinery helps secure adequate fuel supply and manage fuel cost rather than relying on a traditional hedging program alone."
+  },
+  {
+    "corpus": "sec",
+    "question": "What does United disclose about the size and composition of its aircraft fleet?",
+    "company": "UAL",
+    "year": 2024,
+    "reference": "United operates a mainline fleet supplemented by a regional fleet flown by regional carriers under capacity purchase agreements (about 412 regional aircraft), and as of December 31, 2024 it had firm commitments to purchase aircraft from Boeing and Airbus (including 787 and 737 MAX aircraft) with deliveries scheduled in 2025, 2026 and after 2026."
+  },
+  {
+    "corpus": "sec",
+    "question": "How does Delta describe its liquidity and available sources of cash?",
+    "company": "DAL",
+    "year": 2024,
+    "reference": "Delta describes its liquidity as the total of cash and cash equivalents, short-term investments, and the aggregate principal amount committed and available to be drawn under its revolving credit facilities, which together totaled $6.1 billion at December 31, 2024."
+  },
+  {
+    "corpus": "sec",
+    "question": "What does American Airlines say about labor and collective bargaining agreements?",
+    "company": "AAL",
+    "year": 2024,
+    "reference": "American discloses that as of December 31, 2024 it had approximately 133,300 active full-time equivalent employees, approximately 87% of whom were represented by various labor unions that negotiate the collective bargaining agreements governing their compensation and job duties, and that labor relations in the industry are regulated under the Railway Labor Act, administered by the National Mediation Board."
+  },
+  {
+    "corpus": "sec",
+    "question": "What competitive risks does Southwest identify in its business?",
+    "company": "LUV",
+    "year": 2024,
+    "reference": "Southwest identifies that competition in the airline industry is intense and highly unpredictable and that during 2024 it experienced a highly competitive fare environment; it competes on virtually all of its routes with the other largest U.S. airlines such as American, Delta and United, and notes that fare transparency lets travelers easily compare fares and competitor promotions, pressuring pricing."
+  },
+  {
+    "corpus": "sec",
+    "question": "How does Delta describe revenue from its loyalty program?",
+    "company": "DAL",
+    "year": 2024,
+    "reference": "Delta describes its award-winning SkyMiles loyalty program, designed to grow customer loyalty, and its co-brand partnership with American Express, which provides a co-brand revenue stream tied to broader consumer spending, as important sources of revenue."
+  },
+  {
+    "corpus": "sec",
+    "question": "What does Alaska Air Group say about its airlines, fleet and aircraft acquisitions?",
+    "company": "ALK",
+    "reference": "Alaska Air Group operates two airlines, Alaska and Horizon; Alaska flies a fleet of narrowbody Boeing 737 passenger jets on longer routes while Horizon operates Embraer 175 (E175) regional jets. During 2023 it completed the transition of its Mainline and Regional operations to single fleets of B737 and E175 aircraft to improve productivity and cost efficiency, and in 2024 Alaska Air Group acquired Hawaiian Holdings, Inc. It has disclosed firm orders and lease commitments for Boeing 737-9 aircraft with scheduled deliveries."
+  },
+  {
+    "corpus": "sec",
+    "question": "How does United describe its principal operations and hubs?",
+    "company": "UAL",
+    "reference": "United Airlines Holdings' principal wholly-owned subsidiary is United Airlines, Inc. United says it has the most comprehensive route network among North American carriers, with U.S. mainland hubs in Chicago, Denver, Houston, Los Angeles, New York/Newark, San Francisco and Washington, D.C., along with a hub at Guam (A.B. Won Pat International Airport). It transports people and cargo throughout North America and to destinations in Asia, Europe, Africa, the Pacific, the Middle East and Latin America."
+  },
+  {
+    "corpus": "sec",
+    "question": "What risks related to fuel prices do the airlines disclose?",
+    "reference": "The airlines disclose that jet fuel and oil is one of their largest operating expenses (for example about 26.2% of Southwest's 2022 operating expenses, and 17% to 21% of Delta's operating expense over 2023-2025) and that aircraft fuel prices are highly volatile and largely outside the airlines' control, so even a relatively small change in price can have a material effect on operating results, profitability and liquidity. They attribute volatility to factors such as refining capacity, political disruptions or wars involving oil-producing countries, economic sanctions, the strength of the U.S. dollar, and speculation in the energy futures markets."
+  },
+  {
+    "corpus": "sec",
+    "question": "What does American Airlines disclose about its debt and liquidity?",
+    "company": "AAL",
+    "year": 2021,
+    "reference": "American Airlines Group (AAG) disclosed $15.8 billion in total available liquidity at December 31, 2021 - comprising cash, short-term investments and undrawn facilities - plus $990 million in restricted cash and short-term investments. A significant portion of its debt financing agreements contain covenants requiring it to maintain an aggregate of at least $2.0 billion of unrestricted cash and cash equivalents and amounts available to be drawn under revolving credit facilities, and/or loan-to-value, collateral coverage or debt-service-coverage covenants."
+  },
+
+  {
+    "corpus": "nasa",
+    "question": "What was the goal of NASA's Aircraft Energy Efficiency (ACEE) program and when did it run?",
+    "reference": "NASA's Aircraft Energy Efficiency (ACEE) program ran from 1973 to 1987 and was launched in response to the energy concerns surrounding the 1973 OPEC oil embargo to improve the fuel efficiency of commercial aircraft. It comprised six projects addressing the three ways to improve fuel efficiency expressed in the Breguet range equation - decreasing engine fuel consumption, decreasing aircraft drag by improving aerodynamics, and decreasing aircraft weight. The program helped make commercial airplanes substantially more fuel efficient, contributing to airlines using only about half as much fuel to carry a passenger a set distance as they did in the mid-1970s."
+  },
+  {
+    "corpus": "nasa",
+    "question": "What fuel savings did the NASA Advanced Turboprop Program aim to achieve?",
+    "reference": "The NASA Advanced Turboprop (ATP) Program aimed to develop technologies enabling advanced turboprop (propfan) engines to deliver about 15 to 30 percent block-fuel savings relative to comparable-technology advanced turbofan engines (and roughly 50 to 60 percent savings over the then-current turbofan fleet), along with a 7 to 15 percent operating-cost advantage. The program covered both single-rotation and counter-rotation turboprop systems, including a gearless pusher configuration."
+  },
+  {
+    "corpus": "nasa",
+    "question": "How does a supercritical wing improve aircraft fuel efficiency?",
+    "reference": "A supercritical wing, developed and flight-tested by NASA (Richard Whitcomb), has a flattened upper surface that weakens the shock wave forming on the wing at cruise speed and moves it farther aft, reducing the drag and loss of lift that shock wave causes; the trailing edge curves downward to recover lift. This improves the lift-to-drag ratio so less thrust is needed to fly at a given speed. Joint NASA/Air Force F-111 flight tests showed the test wing created up to 30 percent more lift than a conventional wing, and NASA estimated in 1974 that worldwide air carriers could save about half a billion dollars in fuel by adopting the technology."
+  },
+  {
+    "corpus": "nasa",
+    "question": "What is CHEETA and what propulsion and fuel approach does it study?",
+    "reference": "CHEETA (the Center for High-Efficiency Electrical Technologies for Aircraft) is a NASA University Leadership Initiative center studying fully electric propulsion for large subsonic transport aircraft. The concept uses cryogenically stored liquid hydrogen (LH2) as its high-specific-energy energy source, converts it to electricity through fuel cells, and drives an ultra-efficient distributed electric propulsion (DEP) system; the cryogenic LH2 also acts as a coolant enabling highly efficient (including superconducting) electrical machines and power electronics."
+  },
+  {
+    "corpus": "nasa",
+    "question": "What are the benefits of a geared turbofan engine architecture?",
+    "reference": "A geared turbofan (GTF) architecture inserts a reduction gearbox between the fan and the low-pressure turbine so the fan and turbine can each spin at more optimal speeds and the engine can use a higher bypass ratio, routing more air around rather than through the engine. NASA reports this improves engine efficiency by over 15 percent while also reducing noise; Pratt & Whitney developed its PurePower family of GTF engines in collaboration with NASA, cutting fuel consumption and the associated CO2 emissions."
+  },
+  {
+    "corpus": "nasa",
+    "question": "How is cryogenic liquid hydrogen used in electrified aircraft propulsion concepts?",
+    "reference": "In NASA's Electrified Aircraft Propulsion (EAP) integration concepts, cryogenic liquid hydrogen is stored onboard and converted to electricity by primary fuel cells to power the aircraft. Because hydrogen has high stored energy per unit mass, the studies focus on lightweight vacuum-jacketed insulation to limit heat leak and hydrogen boil-off/venting, on tank gravimetric index, redundancy (multiple fuel pumps per tank), and on safety in normal and failure scenarios, since cryogenic hydrogen production, distribution and storage are what enable these hydrogen-fueled electric aircraft."
+  },
+  {
+    "corpus": "nasa",
+    "question": "What is the Transonic Truss-Braced Wing concept and how does it compare to a conventional aircraft?",
+    "reference": "The Transonic Truss-Braced Wing (TTBW) is a novel aircraft configuration - a high-aspect-ratio wing braced by a truss - being studied to improve fuel efficiency through increased aerodynamic efficiency. NASA's analysis stresses that the benefit depends heavily on the baseline: earlier Boeing SUGAR work comparing a TTBW to a 2005 best-in-class tube-and-wing showed roughly a 50-60 percent fuel-burn reduction, but when compared against an advanced tube-and-wing at the same technology level the benefit falls to about 9 percent for a 3500 nautical-mile mission and about 7 percent for a 900 nautical-mile mission."
+  },
+  {
+    "corpus": "nasa",
+    "question": "How can composite materials contribute to aircraft fuel efficiency?",
+    "reference": "Composite materials such as graphite/epoxy can reduce airframe structural weight by about 25 percent compared with aluminum, which lowers fuel burn. NASA's ACEE program accelerated the airline industry's adoption of composites by an estimated 5 to 10 years: FAA-certified composite secondary structures and control surfaces (for example DC-10 rudders and Boeing 727 elevators) were produced, and graphite/epoxy composites were adopted for the control surfaces of the Boeing 767."
+  },
+  {
+    "corpus": "nasa",
+    "question": "What did NASA study about solid oxide fuel cells for aircraft power?",
+    "reference": "NASA studied solid oxide fuel cells (SOFCs) as auxiliary or secondary onboard electrical power generation for aircraft, valuing them for their relative efficiency and longevity to meet growing demand for higher-power electrical equipment. For example, NASA's Fostering Ultra-Efficient Low-Emitting Aviation Power (FUELEAP) project investigated a 120 kW hybrid-electric power system in which most of the net electrical power was supplied by SOFCs running on reformed hydrocarbon fuel, and feasibility studies applied SOFC systems to hybrid-electric regional aircraft."
+  },
+  {
+    "corpus": "nasa",
+    "question": "What airframe technologies were identified for improving aircraft fuel efficiency?",
+    "reference": "Airframe-related technologies NASA identified for improving fuel efficiency include composite primary structures, energy-efficient and advanced supercritical wings, winglets added to wing tips (which exploit the wing-tip vortex), laminar flow control (LFC/HLFC), drag-reducing surface coatings, better integration of the propulsion system with the airframe, and active wing-load alleviation and stability augmentation. Combined, ACEE-developed airframe and aerodynamic technologies were projected to offer total fuel savings in roughly the 20 percent range."
+  },
+  {
+    "corpus": "nasa",
+    "question": "What is the SUSAN Electrofan concept?",
+    "reference": "The SUbsonic Single Aft eNgine (SUSAN) Electrofan is a NASA advanced hybrid-electric aircraft concept for a future single-aisle transport carrying up to about 180 passengers, aimed at the aviation industry's goal of net-zero carbon emissions by 2050. It is designed to significantly reduce fuel burn and emissions while retaining the speed, size and range of current commercial aircraft and using existing airport infrastructure and airspace management, and its hybrid-electric propulsion requires no plug-in charging."
+  },
+  {
+    "corpus": "nasa",
+    "question": "How does open rotor (propfan) propulsion affect aircraft fuel burn?",
+    "reference": "Open rotor propulsion systems - also called advanced turboprops, propfans, or unducted fans - reduce fuel burn because their propulsive efficiency is substantially higher than a high-bypass-ratio turbofan: about 20 percent better at Mach 0.8, increasing to roughly 35 to 40 percent better at Mach 0.7. Counter-rotating open rotors further improve efficiency by recovering swirl losses. Interest rose after the sharp fuel-price increases beginning in 1973, waned when oil prices fell after 1986, and has revived because of renewed fuel-cost and carbon-emission concerns."
+  },
+
+  {
+    "corpus": "rbi",
+    "question": "When is a loan or advance classified as a non-performing asset (NPA)?",
+    "reference": "An asset becomes non-performing when it ceases to generate income for the bank. A non-performing asset (NPA) is a loan or advance where: interest and/or the instalment of principal remains overdue for more than 90 days in respect of a term loan; the account remains 'out of order' in respect of an overdraft/cash-credit (OD/CC) facility; the bill remains overdue for more than 90 days in the case of bills purchased and discounted; and, for any other account, any amount to be received remains overdue for more than 90 days, with specified norms applying to agricultural advances. Classification is done on objective criteria to ensure uniform and consistent application."
+  },
+  {
+    "corpus": "rbi",
+    "question": "What are the sub-categories into which non-performing assets are classified?",
+    "reference": "Banks must classify non-performing assets into three categories based on the period for which the asset has remained non-performing and the realisability of the dues: (i) Substandard assets - an asset that has remained NPA for a period less than or equal to 12 months; (ii) Doubtful assets; and (iii) Loss assets - an asset where a loss has been identified by the bank, its internal or external auditors, or an RBI inspection, but the amount has not yet been fully written off."
+  },
+  {
+    "corpus": "rbi",
+    "question": "What is the minimum capital to risk-weighted assets ratio (CRAR) required under Basel III?",
+    "reference": "Under the Basel III capital framework a bank must maintain a minimum Pillar 1 Capital to Risk-weighted Assets Ratio (CRAR) of 9 percent on an ongoing basis (other than capital buffers). Total Capital (CRAR) is eligible Tier 1 plus Tier 2 capital divided by total risk-weighted assets (credit-risk RWA plus market-risk RWA plus operational-risk RWA). Within the minimum CRAR of 9 percent, Tier 2 capital can be admitted up to a maximum of 2 percent of RWAs, and within minimum Tier 1 capital, Additional Tier 1 capital can be admitted up to a maximum of 1.5 percent of RWAs."
+  },
+  {
+    "corpus": "rbi",
+    "question": "How does the RBI define a wilful defaulter?",
+    "reference": "A 'wilful default' is deemed to have occurred when a borrower defaults in meeting payment/repayment obligations to the lender and one or more of the following features is present: the borrower had the capacity to honour the obligations but did not; diverted the funds availed under the credit facility; siphoned off the funds availed under the credit facility; or disposed of movable or immovable assets provided to secure the credit facility without the lender's approval. The default categorised as wilful must be intentional, deliberate and calculated, judged from the borrower's track record rather than isolated incidents."
+  },
+  {
+    "corpus": "rbi",
+    "question": "When is an overdraft or cash credit account treated as 'out of order'?",
+    "reference": "A cash credit/overdraft (CC/OD) account is treated as 'out of order' if any of the following conditions is satisfied: the outstanding balance remains continuously in excess of the sanctioned limit or drawing power for 90 days; or there are no credits continuously for 90 days; or the credits during the previous 90 days are not enough to cover the interest debited during that same period."
+  },
+  {
+    "corpus": "rbi",
+    "question": "What is the capital conservation buffer under Basel III capital regulations?",
+    "reference": "The capital conservation buffer under Basel III is 2.5 percent of risk-weighted assets, to be held in the form of Common Equity Tier 1 capital over and above the minimum CET1 requirement (an institution-specific buffer requirement is computed as 5.5 percent CET1 plus the 2.5 percent capital conservation buffer plus any countercyclical and D-SIB/G-SIB buffers). It is designed to strengthen banks' ability to withstand adverse economic conditions; a bank that draws down the buffer during a stressed period must have a definite plan to replenish it within a time limit agreed with the Reserve Bank of India."
+  },
+  {
+    "corpus": "rbi",
+    "question": "What provisioning is required for substandard assets?",
+    "reference": "A general provision of 15 percent of the total outstanding is required on substandard assets, without making any allowance for ECGC guarantee cover or the securities available. In addition, 'unsecured exposures' that are identified as substandard attract an additional provision of 10 percent, i.e. a total of 25 percent of the outstanding balance (with certain relaxations available for specified infrastructure exposures with safeguards such as escrow accounts)."
+  },
+  {
+    "corpus": "rbi",
+    "question": "What is a Credit Information Company under RBI directions?",
+    "reference": "A 'credit information company' (CIC) means a company that has been granted a certificate of registration under Section 5 of the Credit Information Companies (Regulation) Act, 2005."
+  },
+  {
+    "corpus": "rbi",
+    "question": "What restrictions apply to a bank's declaration of dividend?",
+    "reference": "To be eligible to declare dividends (or remit profits), a bank must have complied with the applicable regulatory capital requirement at the end of the previous financial year and continue to comply after the dividend is paid, its regulatory capital must not fall below the applicable requirement even after payment of the dividend, and (for a bank incorporated in India) it must have positive adjusted Profit After Tax for the period. The Board must also consider divergences in NPA asset classification and provisioning observed under RBI supervision, any modified opinion or emphasis of matter in the auditors' report, and the current and projected capital position. A bank shall not pay dividend out of net unrealised gains arising on fair valuation of Level 3 financial instruments."
+  },
+  {
+    "corpus": "rbi",
+    "question": "How are doubtful assets provisioned?",
+    "reference": "Provisioning against a doubtful asset is based on the period for which the asset has remained doubtful and the realisable value of the security: 100 percent provision is required for the portion of the advance not covered by the realisable value of the security, while the secured portion is provided for on a graded scale according to how long the asset has been doubtful. Where a doubtful advance is covered by an ECGC guarantee, provision is made only on the balance in excess of the amount guaranteed by the Corporation, after first deducting the realisable value of the securities. Loss assets, by contrast, are written off entirely (100 percent)."
+  },
+  {
+    "corpus": "rbi",
+    "question": "What consequences follow from being classified as a wilful defaulter?",
+    "reference": "A borrower classified as a wilful defaulter faces penal measures: no additional credit facilities from banks, and no credit facility for floating new ventures for a period of five years after the borrower's name is removed from the List of Wilful Defaulters. The bank may, based on the facts of each case, initiate criminal proceedings against wilful defaulters where warranted, and any restructuring of a wilful defaulter (or an associated entity) is governed by the Reserve Bank of India (Commercial Banks - Resolution of Stressed Assets) Directions, 2025. Wilful defaulters are reported to credit information companies, subject to a threshold of ₹25 lakh."
+  }
+]
