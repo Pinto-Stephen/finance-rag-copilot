@@ -5,39 +5,57 @@ from llama_index.core.vector_stores import (MetadataFilter,MetadataFilters,Filte
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from llama_index.retrievers.bm25 import BM25Retriever
-from config.settings import QDRANT_PATH,COLLECTION,EMBED_MODEL,RERANK_MODEL,RETRIEVE_TOP_K,RERANK_TOP_N
+from config.settings import QDRANT_PATH,COLLECTION,EMBED_MODEL,RERANK_MODEL,RETRIEVE_TOP_K,RERANK_TOP_N,CORPORA,DEFAULT_CORPUS
 
 Settings.embed_model = HuggingFaceEmbedding(model_name=EMBED_MODEL)
 
 _reranker = SentenceTransformerRerank(model=RERANK_MODEL, top_n=RERANK_TOP_N)
 
-# Lazily-built sparse retriever. Qdrant persists vectors only (no docstore), so to
-# add a BM25 keyword leg we re-chunk the filings once and index them in memory.
-_bm25 = None
+# Lazily-built sparse retrievers, one per corpus. Qdrant persists vectors only (no
+# docstore), so to add a BM25 keyword leg we re-chunk each corpus's source docs once
+# and index them in memory, keyed by corpus so switching corpora doesn't rebuild.
+_bm25 = {}
+
+# All three corpora share one on-disk Qdrant, and local Qdrant allows only one client
+# per path per process — so we open a single shared client and point per-corpus indexes
+# at their own collection through it (opening a second client would deadlock).
+_client = None
 
 
-def load_index():
-    """Reconnect to the persisted Qdrant index"""
-    client = QdrantClient(path=QDRANT_PATH)
-    vector_store = QdrantVectorStore(client=client, collection_name=COLLECTION)
+def _get_client():
+    global _client
+    if _client is None:
+        _client = QdrantClient(path=QDRANT_PATH)
+    return _client
+
+
+def load_index(corpus=DEFAULT_CORPUS):
+    """Reconnect to a corpus's persisted Qdrant collection (defaults to SEC)."""
+    collection = CORPORA[corpus]["collection"]
+    vector_store = QdrantVectorStore(client=_get_client(), collection_name=collection)
     return VectorStoreIndex.from_vector_store(vector_store)
 
 
-def _get_bm25():
-    """Build (once) a BM25 retriever over the re-chunked filings.
+def _get_bm25(corpus=DEFAULT_CORPUS):
+    """Build (once, per corpus) a BM25 retriever over that corpus's re-chunked docs.
 
-    This re-reads and re-chunks the source filings the first time it's called
-    (~30s); afterwards it's cached for the process. BM25 doesn't apply metadata
-    filters reliably, so we over-fetch and post-filter in retrieve().
+    This re-reads and re-chunks the corpus's source docs the first time it's called
+    for that corpus (~30s+); afterwards it's cached for the process. BM25 doesn't
+    apply metadata filters reliably, so we over-fetch and post-filter in retrieve().
     """
-    global _bm25
-    if _bm25 is None:
-        from src.ingest import load_and_chunk
-        _, nodes = load_and_chunk()
-        _bm25 = BM25Retriever.from_defaults(
+    if corpus not in _bm25:
+        # SEC keeps its frozen load_and_chunk() path (byte-for-byte unchanged); other
+        # corpora resolve their raw docs through load_and_chunk_corpus.
+        if corpus == DEFAULT_CORPUS:
+            from src.ingest import load_and_chunk
+            _, nodes = load_and_chunk()
+        else:
+            from src.ingest import load_and_chunk_corpus
+            _, nodes = load_and_chunk_corpus(corpus)
+        _bm25[corpus] = BM25Retriever.from_defaults(
             nodes=nodes, similarity_top_k=RETRIEVE_TOP_K * 4
         )
-    return _bm25
+    return _bm25[corpus]
 
 
 def _build_filters(company=None, year=None):
@@ -82,12 +100,13 @@ def _rrf(result_lists, k=60):
     return sorted(holder.values(), key=lambda n: scores[_dedup_key(n.node)], reverse=True)
 
 
-def retrieve(query, index, company=None, year=None):
+def retrieve(query, index, corpus=DEFAULT_CORPUS, company=None, year=None):
     """Hybrid retrieval (dense + BM25) then cross-encoder rerank.
 
     Dense vector search and BM25 keyword search each cast a wide net (with the
     company/year scope applied to both); their results are fused via RRF and the
-    pooled candidates are reranked down to RERANK_TOP_N.
+    pooled candidates are reranked down to RERANK_TOP_N. `index` and `corpus` must
+    refer to the same corpus so the dense and sparse legs stay aligned.
 
     Returns a list of NodeWithScore, where node.score is the reranker's
     relevance score (it replaces the original retrieval scores).
@@ -98,7 +117,7 @@ def retrieve(query, index, company=None, year=None):
     ).retrieve(query)
 
     sparse = [
-        n for n in _get_bm25().retrieve(query)
+        n for n in _get_bm25(corpus).retrieve(query)
         if _matches(n, company, year)
     ][:RETRIEVE_TOP_K]
 

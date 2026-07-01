@@ -5,7 +5,7 @@ from llama_index.core.llms import ChatMessage, MessageRole
 from llama_index.llms.groq import Groq
 
 from src.retrieve import load_index, retrieve
-from config.settings import LLM_MODEL
+from config.settings import LLM_MODEL, DEFAULT_CORPUS
 
 load_dotenv()
 
@@ -39,26 +39,31 @@ PROMPT_TEMPLATE = (
 )
 
 
-def format_context(nodes):
-    """Tag each chunk with its source filing so the model can cite it."""
+def format_context(nodes, corpus=DEFAULT_CORPUS):
+    """Tag each chunk with its source so the model can cite it. SEC keeps its
+    [TICKER YEAR] tag (unchanged); other corpora tag with their citation/title,
+    since they carry no company/year in the uniform metadata schema."""
     blocks = []
     for node in nodes:
         m = node.metadata
-        tag = f"[{m.get('company')} {m.get('year')}]"
+        if corpus == DEFAULT_CORPUS:
+            tag = f"[{m.get('company')} {m.get('year')}]"
+        else:
+            tag = f"[{m.get('citation') or m.get('title') or m.get('doc_id')}]"
         blocks.append(f"{tag}\n{node.text}")
     return "\n\n".join(blocks)
 
 
-def answer(question, index, company=None, year=None):
+def answer(question, index, corpus=DEFAULT_CORPUS, company=None, year=None):
     """Retrieve + rerank, then generate a grounded, cited answer.
 
     Returns (answer_text, source_nodes) so the app/other callers can
     show the answer alongside the filings it came from"""
-    nodes = retrieve(question, index, company=company, year=year)
+    nodes = retrieve(question, index, corpus=corpus, company=company, year=year)
     if not nodes:
         return "No relevant filings found for that scope.", []
 
-    prompt = PROMPT_TEMPLATE.format(context=format_context(nodes), question=question)
+    prompt = PROMPT_TEMPLATE.format(context=format_context(nodes, corpus), question=question)
     messages = [
         ChatMessage(role=MessageRole.SYSTEM, content=SYSTEM_PROMPT),
         ChatMessage(role=MessageRole.USER, content=prompt),
