@@ -9,33 +9,47 @@ import streamlit as st
 from src.retrieve import load_index
 from src.generate import answer
 from src.agent import build_agent, ask as agent_ask
+from config.settings import CORPORA, DEFAULT_CORPUS
 
-st.set_page_config(page_title="Airline 10-K Copilot", page_icon="✈️", layout="wide")
+st.set_page_config(page_title="Research Copilot", page_icon="📚", layout="wide")
 
 TICKERS = ["All", "DAL", "UAL", "AAL", "LUV", "ALK"]
 YEARS = ["All", 2021, 2022, 2023, 2024, 2025]
 
+# display label -> corpus key, in registry order (SEC first, so it's the default).
+CORPUS_OPTIONS = {cfg["display_name"]: key for key, cfg in CORPORA.items()}
+
 
 @st.cache_resource(show_spinner="Loading index, embeddings and reranker...")
-def get_index():
-    """Load the index once and reuse across reruns (one Qdrant connection)."""
-    return load_index()
+def get_index(corpus):
+    """Load a corpus's index once and reuse across reruns (cached per corpus; all
+    corpora share one Qdrant connection under the hood)."""
+    return load_index(corpus)
 
 
 @st.cache_resource(show_spinner="Building the agent...")
-def get_agent():
-    """Build the ReAct agent once, sharing the single cached Qdrant index so the
-    single-shot and agent paths never open a second (deadlocking) connection."""
-    return build_agent(get_index())
+def get_agent(corpus):
+    """Build the ReAct agent once per corpus, sharing that corpus's cached Qdrant
+    index so the single-shot and agent paths never open a second (deadlocking)
+    connection."""
+    return build_agent(get_index(corpus), corpus=corpus)
 
 
-index = get_index()
-
-st.title("✈️ Airline 10-K Research Copilot")
-st.caption("Answers are grounded in the filings and cited as [TICKER YEAR]. "
-           "If the filings don't cover something, the assistant says so.")
+st.title("📚 Research Copilot")
+st.caption("Answers are grounded in the selected corpus's documents and cited from "
+           "them. If the documents don't cover something, the assistant says so.")
 
 with st.sidebar:
+    st.header("Corpus")
+    corpus_display = st.radio(
+        "Corpus",
+        list(CORPUS_OPTIONS),
+        help="Which document collection to search. Company/year filters apply to the "
+             "Airlines 10-K corpus only.",
+    )
+    corpus = CORPUS_OPTIONS[corpus_display]
+    is_sec = corpus == DEFAULT_CORPUS
+
     st.header("Mode")
     mode = st.radio(
         "Answering mode",
@@ -45,9 +59,12 @@ with st.sidebar:
     )
     st.header("Scope")
     agent_mode = mode == "Agent (multi-step)"
-    company = st.selectbox("Company", TICKERS, disabled=agent_mode)
-    year = st.selectbox("Fiscal year", YEARS, disabled=agent_mode)
-    if agent_mode:
+    scope_disabled = agent_mode or not is_sec
+    company = st.selectbox("Company", TICKERS, disabled=scope_disabled)
+    year = st.selectbox("Fiscal year", YEARS, disabled=scope_disabled)
+    if not is_sec:
+        st.caption("Company/year filters apply to the Airlines 10-K corpus only.")
+    elif agent_mode:
         st.caption("In Agent mode the assistant chooses the company/year scope per "
                    "tool call, so these filters are ignored.")
     else:
@@ -55,6 +72,13 @@ with st.sidebar:
     if st.button("Clear conversation"):
         st.session_state.messages = []
         st.rerun()
+
+# Filters only meaningful for SEC; force them off for other corpora regardless of the
+# (disabled) widget's retained value.
+company = company if is_sec else "All"
+year = year if is_sec else "All"
+
+index = get_index(corpus)
 
 
 def run_with_live_status(work, phase_messages):
@@ -91,12 +115,21 @@ def scope_label(company, year):
     return f"{company} FY{year}"
 
 
+def source_label(node, corpus):
+    """Citation label for a retrieved chunk. SEC uses [TICKER YEAR]; other corpora
+    use their citation/title, matching how generate.format_context tags them."""
+    m = node.metadata
+    if corpus == DEFAULT_CORPUS:
+        return f"[{m.get('company')} {m.get('year')}]"
+    return f"[{m.get('citation') or m.get('title') or m.get('doc_id')}]"
+
+
 def render_sources(sources):
     if not sources:
         return
     with st.expander(f"Sources ({len(sources)})"):
         for s in sources:
-            st.markdown(f"**[{s['company']} {s['year']}]**  ·  relevance {s['score']:.3f}")
+            st.markdown(f"**{s['label']}**  ·  relevance {s['score']:.3f}")
             st.caption(s["text"])
 
 
@@ -109,7 +142,7 @@ for m in st.session_state.messages:
         st.markdown(m["content"])
         render_sources(m.get("sources"))
 
-if prompt := st.chat_input("Ask about the airline 10-Ks..."):
+if prompt := st.chat_input(f"Ask about the {corpus_display} corpus..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
@@ -124,11 +157,11 @@ if prompt := st.chat_input("Ask about the airline 10-Ks..."):
                 "Almost there — preserving [TICKER YEAR] citations…",
             ]
             text, elapsed = run_with_live_status(
-                lambda: agent_ask(prompt, agent=get_agent()), phases
+                lambda: agent_ask(prompt, agent=get_agent(corpus)), phases
             )
             nodes = []  # the agent synthesizes; citations are carried inline as [TICKER YEAR]
         else:
-            scope = scope_label(company, year)
+            scope = scope_label(company, year) if is_sec else corpus_display
             phases = [
                 f"Searching {scope} for relevant passages…",
                 f"Re-ranking the strongest matches for {scope}…",
@@ -140,6 +173,7 @@ if prompt := st.chat_input("Ask about the airline 10-Ks..."):
                 lambda: answer(
                     prompt,
                     index,
+                    corpus=corpus,
                     company=None if company == "All" else company,
                     year=None if year == "All" else year,
                 ),
@@ -149,8 +183,7 @@ if prompt := st.chat_input("Ask about the airline 10-Ks..."):
         st.caption(f"Answered in {elapsed:0.1f}s")
         sources = [
             {
-                "company": n.metadata.get("company"),
-                "year": n.metadata.get("year"),
+                "label": source_label(n, corpus),
                 "score": float(n.score or 0.0),
                 "text": n.text[:400],
             }
