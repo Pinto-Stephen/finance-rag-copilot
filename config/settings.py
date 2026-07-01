@@ -18,11 +18,16 @@ COLLECTION = "airline_10k"        # kept for back-compat (== CORPORA["sec"]["col
 # Each corpus lives in its own data dir and its own Qdrant collection (locked design
 # decision: separate collections, never merged). index_build.py and the ingest layer
 # resolve everything through this registry so a new corpus is one entry, not a rewrite.
+# display_name is the human label the UI shows in its corpus selector.
 CORPORA = {
-    "sec":  {"data_dir": DEFAULT_DATA_DIR, "collection": COLLECTION},
-    "nasa": {"data_dir": NASA_DATA_DIR,    "collection": "nasa_reports"},
-    "rbi":  {"data_dir": RBI_DATA_DIR,     "collection": "rbi_circulars"},
+    "sec":  {"data_dir": DEFAULT_DATA_DIR, "collection": COLLECTION,      "display_name": "Airlines 10-K"},
+    "nasa": {"data_dir": NASA_DATA_DIR,    "collection": "nasa_reports",  "display_name": "NASA Reports"},
+    "rbi":  {"data_dir": RBI_DATA_DIR,     "collection": "rbi_circulars", "display_name": "RBI Circulars"},
 }
+
+# The corpus every query-path function defaults to, so callers that pass no corpus get
+# the original SEC behavior unchanged (backward compatibility).
+DEFAULT_CORPUS = "sec"
 
 CHUNK_SIZE     = 512
 CHUNK_OVERLAP  = 64
