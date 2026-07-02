@@ -66,10 +66,34 @@ RESULTS = Path("eval/results.csv")
 # The RAG pipeline answers with gpt-oss-120b (MODEL). The RAGAS judge, however, fans
 # out several LLM calls per sample across four metrics (LLMContextPrecision alone judges
 # each retrieved chunk), so pointing it at gpt-oss exhausts that model's per-day token
-# budget and starves scoring. Judge on a separate Groq model with the largest free-tier
-# daily budget (llama-3.1-8b-instant, ~500k tokens/day) so judging never competes with
-# generation and a full 4-metric run over the whole testset fits in one day.
+# budget and starves scoring.
 JUDGE_MODEL = "llama-3.1-8b-instant"
+
+# Per-metric judge routing: give each metric its OWN Groq model so that, when scoring
+# runs concurrently, jobs for different metrics draw from SEPARATE per-minute / per-day
+# token buckets instead of all oversubscribing one model's ~6k TPM (which is what forced
+# --max-workers 1 and caused the timeout NaNs). Heaviest metrics get the biggest daily
+# buckets: context_precision (most calls) -> 8b (500k/day); faithfulness (heavy per call)
+# -> gpt-oss (200k/day, its own bucket); context_recall + the light answer_relevancy
+# (mostly local embeddings) -> 70b (fast, 12k TPM). Pass --judge to force one model for
+# all metrics instead. NOTE: the free-tier DAILY caps are still small, so this mainly
+# speeds up reduced (--limit-per-corpus) runs; a full 33x4 run still wants more keys/tier.
+METRIC_JUDGES = {
+    "faithfulness":      "openai/gpt-oss-120b",
+    "answer_relevancy":  "llama-3.3-70b-versatile",
+    "context_precision": "llama-3.1-8b-instant",
+    "context_recall":    "llama-3.3-70b-versatile",
+}
+
+
+def _judge_llm(model, cache):
+    """Build (once per model) a bypass_n RAGAS judge wrapper. bypass_n issues n separate
+    single-completion calls instead of n>1 in one request, which Groq rejects."""
+    if model not in cache:
+        cache[model] = LangchainLLMWrapper(
+            ChatGroq(model=model, temperature=0, max_tokens=2048), bypass_n=True
+        )
+    return cache[model]
 
 
 def build_samples():
@@ -133,41 +157,44 @@ def load_cached_samples(limit_per_corpus=None):
     return samples, corpora
 
 
-def score_and_report(samples, corpora, judge_model=JUDGE_MODEL, max_workers=5):
-    """Score samples with the RAGAS judge and write/print the per-corpus breakdown."""
+def score_and_report(samples, corpora, judge_model=None, max_workers=5):
+    """Score samples with the RAGAS judge(s) and write/print the per-corpus breakdown.
+
+    judge_model=None uses per-metric model routing (METRIC_JUDGES) so concurrent jobs
+    spread across separate Groq token buckets; pass a model name to force that one model
+    for every metric (single-bucket mode, best with max_workers=1)."""
     dataset = EvaluationDataset(samples=samples)
 
-    # Judge LLM + embeddings = your own BGE-M3. bypass_n=True makes RAGAS issue n separate
-    # single-completion calls instead of sending n>1 in one request, which Groq rejects
-    # (HTTP 400: "'n' : number must be at most 1"). max_tokens is generous so multi-step
-    # judgments (claim NLI, per-chunk verdicts) don't get truncated (LLMDidNotFinish).
-    evaluator_llm = LangchainLLMWrapper(
-        ChatGroq(model=judge_model, temperature=0, max_tokens=2048), bypass_n=True
-    )
+    # Embeddings judge = your own BGE-M3 (local, no API budget). Each metric gets its own
+    # LLM: either the forced --judge model, or its per-metric routed model.
     evaluator_emb = LangchainEmbeddingsWrapper(
         HuggingFaceEmbeddings(model_name="BAAI/bge-m3")
     )
+    llm_cache = {}
+
+    def jm(metric_name):
+        return _judge_llm(judge_model or METRIC_JUDGES[metric_name], llm_cache)
 
     # strictness=1: ResponseRelevancy generates `strictness` reverse-questions per sample;
     # 1 keeps the judge token budget within the free-tier daily cap (default is 3).
     metrics = [
-        Faithfulness(),
-        ResponseRelevancy(strictness=1),
-        LLMContextPrecisionWithoutReference(),
-        LLMContextRecall(),
+        Faithfulness(llm=jm("faithfulness")),
+        ResponseRelevancy(llm=jm("answer_relevancy"), embeddings=evaluator_emb, strictness=1),
+        LLMContextPrecisionWithoutReference(llm=jm("context_precision")),
+        LLMContextRecall(llm=jm("context_recall")),
     ]
 
-    # The 8B judge is slow (~30-60s/call at 6k TPM) and some metrics chain several calls
-    # per sample (context-precision judges each retrieved chunk), so a low timeout kills
-    # those jobs mid-flight -> NaN. Keep concurrency modest (less per-minute contention,
-    # so each job's sequential calls run without throttling) and the timeout generous.
+    # Some metrics chain several calls per sample (context-precision judges each retrieved
+    # chunk), so a low timeout kills those jobs mid-flight -> NaN. Per-metric routing lets
+    # concurrent jobs use different token buckets, so max_workers can go above 1 without
+    # oversubscribing one model's per-minute budget; keep the timeout generous regardless.
     run_config = RunConfig(max_workers=max_workers, timeout=600, max_retries=4)
 
-    print(f"Scoring with RAGAS (judge={judge_model}, several calls per sample)...")
+    routing = judge_model or "per-metric routing " + str(METRIC_JUDGES)
+    print(f"Scoring with RAGAS (judge={routing}, max_workers={max_workers})...")
     result = evaluate(
         dataset=dataset,
         metrics=metrics,
-        llm=evaluator_llm,
         embeddings=evaluator_emb,
         run_config=run_config,
     )
@@ -201,8 +228,10 @@ def main():
              "them (skips the generation model — use when its daily quota is exhausted).",
     )
     parser.add_argument(
-        "--judge", default=JUDGE_MODEL,
-        help=f"Groq model to use as the RAGAS judge (default: {JUDGE_MODEL}).",
+        "--judge", default=None,
+        help="Force ALL metrics onto one Groq judge model (best with --max-workers 1). "
+             "Omit to use per-metric model routing (METRIC_JUDGES), which spreads "
+             "concurrent jobs across separate token buckets so --max-workers can be >1.",
     )
     parser.add_argument(
         "--limit-per-corpus", type=int, default=None,
