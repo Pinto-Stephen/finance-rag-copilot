@@ -24,10 +24,11 @@ CORPUS_OPTIONS = {cfg["display_name"]: key for key, cfg in CORPORA.items()}
 CORPUS_INTROS = {
     "sec": (
         "👋 **Airlines 10-K** — annual **10-K filings (FY2021–2025)** from five US "
-        "airlines: Delta (DAL), United (UAL), American (AAL), Southwest (LUV) and "
-        "Alaska (ALK). Ask about fuel hedging, fleets and aircraft orders, liquidity and "
-        "debt, labor and unions, competition, or loyalty programs. Use the sidebar to "
-        "scope answers to a specific company or fiscal year.\n\n"
+        "airlines: **Delta Air Lines (DAL)**, **United Airlines (UAL)**, **American "
+        "Airlines (AAL)**, **Southwest Airlines (LUV)** and **Alaska Air Group (ALK)**. "
+        "Ask about fuel hedging, fleets and aircraft orders, liquidity and debt, labor "
+        "and unions, competition, or loyalty programs. Use the sidebar to scope answers "
+        "to a specific airline or fiscal year.\n\n"
         "**Try asking:**\n"
         "- What did Delta say about its fuel hedging strategy?\n"
         "- How does United describe its fleet and hubs?\n"
