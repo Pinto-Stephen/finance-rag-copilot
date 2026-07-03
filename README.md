@@ -112,6 +112,38 @@ python -m eval.run_eval                  # full run  -> eval/results.csv
 python -m eval.run_eval --rescore --max-workers 1   # re-score cached answers only
 ```
 
+## Evaluation
+
+The pipeline is scored with **RAGAS** over `eval/testset.json` (33 grounded questions —
+~10–12 per corpus, each with a hand-written reference answer). Four metrics separate
+retrieval quality from generation quality:
+
+- **Faithfulness** — is the answer grounded in the retrieved chunks? (catches hallucination)
+- **Answer relevancy** — does the answer actually address the question? (embedding-based)
+- **Context precision** — are the retrieved chunks relevant to the question?
+- **Context recall** — did retrieval surface what the reference answer needs?
+
+Latest run (judge: Groq `llama-3.1-8b-instant` + BGE-M3 embeddings). Scores are the mean
+over the **valid** samples for each cell; `n` is how many scored:
+
+| Corpus | Faithfulness | Answer relevancy | Context precision | Context recall |
+|---|---|---|---|---|
+| Airlines 10-K (10 Q) | 0.95 (n=8) | 0.77 (n=10) | 0.97 (n=7) | 0.87 (n=5) |
+| NASA Reports (12 Q) | 0.96 (n=8) | 0.85 (n=12) | 0.94 (n=3) | 0.67 (n=8) |
+| RBI Circulars (11 Q) | 0.91 (n=4) | 0.91 (n=10) | 1.00 (n=1) | 0.96 (n=7) |
+| **Overall** (33 Q) | **0.95 (n=20)** | **0.84 (n=32)** | **0.96 (n=11)** | **0.82 (n=20)** |
+
+**Read the numbers with the `n`.** Answers are highly faithful (~0.95) and precise (~0.96)
+where measured, and relevancy is well-sampled (32/33). Faithfulness, context precision and
+context recall are **under-sampled** because free-tier Groq daily token caps rate-limited
+part of the judge run — those cells (esp. RBI context precision, n=1) are indicative, not
+final. Reproduce / extend with:
+
+```bash
+python -m eval.run_eval                              # full run  -> eval/results.csv
+python -m eval.run_eval --rescore --max-workers 1    # re-score cached answers only
+```
+
 ## Design notes
 
 - **Separate collections, one registry:** each corpus lives in its own Qdrant
