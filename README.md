@@ -21,7 +21,7 @@ to the SEC corpus so the original single-corpus behavior is unchanged.
 | Stage | File | What it does |
 |-------|------|--------------|
 | Config | `config/settings.py` | `CORPORA` registry (corpus → data dir, Qdrant collection, display name), `DEFAULT_CORPUS`, model names, chunk sizes, top-k |
-| Fetch | `fetch_nasa.py`, `fetch_rbi.py` | Download NASA (NTRS) reports and RBI circulars as PDFs into `data/raw/{nasa,rbi}/` plus a `_<corpus>_metadata.jsonl` sidecar (SEC 10-Ks were fetched separately from EDGAR into `data/raw/sec/{TICKER}/`) |
+| Data | `data/raw/{sec,nasa,rbi}/` | Source docs: SEC 10-K `.htm` (shipped with the repo), plus NASA/RBI PDFs and a `_<corpus>_metadata.jsonl` sidecar under their folders |
 | Ingest | `src/ingest.py` | HTML/inline-XBRL reader for 10-Ks, PDF reader for NASA/RBI; attaches a **uniform cross-corpus metadata schema** (`corpus/title/citation/source_url/doc_id`; SEC also `company/year`); chunks with `SentenceSplitter`. `load_and_chunk_corpus(corpus)` |
 | Index | `src/index_build.py` | `--corpus sec\|nasa\|rbi\|all`: BGE-M3 embeddings → each corpus's **own** Qdrant collection at `storage/qdrant`; wipes only its target collection so re-runs don't duplicate |
 | Retrieve | `src/retrieve.py` | `load_index(corpus)` → dense (top-20, optional `company/year` filter) **+ per-corpus BM25** fused via RRF → `bge-reranker-v2-m3` rerank (top-5); one shared Qdrant client across corpora |
@@ -65,12 +65,12 @@ Run everything **from the project root** with the virtual-env activated.
    build it once (re-embeds every chunk — a few minutes; safe to re-run):
 
    ```bash
-   # source docs must be under data/raw/{sec,nasa,rbi}/ first:
-   python fetch_nasa.py      # -> data/raw/nasa/ + sidecar   (skip if already present)
-   python fetch_rbi.py       # -> data/raw/rbi/  + sidecar   (SEC 10-Ks ship under data/raw/sec/)
-
    python -m src.index_build --corpus all      # or: --corpus sec | nasa | rbi
    ```
+
+   The build reads source docs from `data/raw/{sec,nasa,rbi}/`. The SEC 10-Ks are
+   included with the repo; place the NASA/RBI PDFs (plus each corpus's
+   `_<corpus>_metadata.jsonl` sidecar) under their folders to build those corpora.
 
 2. **Launch the UI:**
 
