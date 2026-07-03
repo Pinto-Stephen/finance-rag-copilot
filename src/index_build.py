@@ -1,6 +1,6 @@
 """
 index_build.py — Embed a corpus's chunks with BGE-M3 and build its OWN Qdrant
-collection. The three corpora (sec | nasa | rbi) live in SEPARATE collections by
+collection. The three corpuses (sec | nasa | rbi) live in SEPARATE collections by
 design, so building one NEVER touches the others.
 
 Run from the project root, choosing a corpus explicitly:

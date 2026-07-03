@@ -11,9 +11,9 @@ Settings.embed_model = HuggingFaceEmbedding(model_name=EMBED_MODEL)
 
 _reranker = SentenceTransformerRerank(model=RERANK_MODEL, top_n=RERANK_TOP_N)
 
-# Lazily-built sparse retrievers, one per corpus. Qdrant persists vectors only (no
-# docstore), so to add a BM25 keyword leg we re-chunk each corpus's source docs once
-# and index them in memory, keyed by corpus so switching corpora doesn't rebuild.
+# Lazily-built sparse retrievers, one per corpus.
+# Qdrant persists vectors only (no docstore), so to add a BM25 keyword leg we re-chunk
+# each corpus's source docs once and index them in memory, keyed by corpus so switching corpora doesn't rebuild.
 _bm25 = {}
 
 # All three corpora share one on-disk Qdrant, and local Qdrant allows only one client
@@ -40,7 +40,7 @@ def _get_bm25(corpus=DEFAULT_CORPUS):
     """Build (once, per corpus) a BM25 retriever over that corpus's re-chunked docs.
 
     This re-reads and re-chunks the corpus's source docs the first time it's called
-    for that corpus (~30s+); afterwards it's cached for the process. BM25 doesn't
+    for that corpus (~30s+); it's then cached for the process. BM25 doesn't
     apply metadata filters reliably, so we over-fetch and post-filter in retrieve().
     """
     if corpus not in _bm25:

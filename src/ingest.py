@@ -6,7 +6,7 @@ Run directly from the project root to sanity-check the load/chunk step:
     python -m src.ingest
 
 Import it from index_build.py to get the nodes without side effects:
-    from src.ingest import load_and_chunk            # SEC default (back-compat)
+    from src.ingest import load_and_chunk             # SEC default (back-compat)
     from src.ingest import load_and_chunk_corpus      # any corpus: sec | nasa | rbi
     docs, nodes = load_and_chunk_corpus("nasa")
 
@@ -32,9 +32,6 @@ logger = logging.getLogger(__name__)
 # 10-Ks are XBRL parsed as HTML, so this warning would otherwise fire constantly.
 warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 
-# PDF text extraction backend. PyMuPDF (fitz) is preferred — it is faster and keeps
-# reading order better on multi-column NASA reports — but we fall back to pypdf so the
-# pipeline still runs if PyMuPDF isn't installed. index_build prints which one is live.
 try:
     import fitz  # PyMuPDF
     PDF_BACKEND = "pymupdf"
@@ -47,16 +44,10 @@ except ImportError:                          # pragma: no cover - environment-de
         pypdf = None
         PDF_BACKEND = None
 
-# A PDF over this size gets a heads-up log before we extract (there's a ~60 MB NASA
-# file); below this many extracted chars we treat the PDF as scanned / text-layer-less
-# and skip it, since embedding a near-empty doc only pollutes retrieval.
+
 _LARGE_PDF_MB = 25
 _MIN_TEXT_CHARS = 200
 
-# Bookkeeping/provenance metadata that should travel with a node but never be embedded
-# or shown to the LLM (they're not semantic signal). Listing a key that isn't present
-# on a given corpus is harmless. title/corpus/company/year are deliberately NOT here —
-# they're useful context.
 _NON_CONTEXT_KEYS = ["source_url", "doc_id", "file_path", "file_name"]
 
 
