@@ -30,11 +30,21 @@ to the SEC corpus so the original single-corpus behavior is unchanged.
 | Eval | `eval/run_eval.py` + `eval/testset.json` | Routes each question to its corpus; RAGAS Faithfulness / ResponseRelevancy / ContextPrecision / ContextRecall via a Groq judge; per-corpus means → `eval/results.csv` |
 | UI | `app/streamlit_app.py` | Chat UI with a **corpus selector**, per-corpus intros & example questions, single-shot / agent modes, and corpus-aware source citations |
 
+## Prerequisites
+
+- **Python 3.10+** (developed on 3.12) and **git**.
+- A **Groq API key** — free tier works: <https://console.groq.com>.
+- ~a few GB of free disk for the embedding/reranker models and the on-disk Qdrant.
+  A GPU is optional — the models run on CPU (first query is just slower).
+
 ## Setup
 
 ```bash
+git clone <repo-url> finance-rag-copilot
+cd finance-rag-copilot
+
 python -m venv .venv
-.venv\Scripts\activate            # Windows  (source .venv/bin/activate on *nix)
+.venv\Scripts\activate            # Windows  (source .venv/bin/activate on macOS/Linux)
 pip install -r requirements.txt
 ```
 
@@ -47,32 +57,55 @@ LANGSMITH_API_KEY=...       # optional
 LANGSMITH_PROJECT=...       # optional
 ```
 
-## Run order
+## Run the app
 
-Run everything **from the project root**. The three Qdrant collections are pre-built,
-so to just query you only need the query/UI steps.
+Run everything **from the project root** with the virtual-env activated.
+
+1. **Make sure the vector index exists.** If `storage/qdrant` is missing or empty,
+   build it once (re-embeds every chunk — a few minutes; safe to re-run):
+
+   ```bash
+   # source docs must be under data/raw/{sec,nasa,rbi}/ first:
+   python fetch_nasa.py      # -> data/raw/nasa/ + sidecar   (skip if already present)
+   python fetch_rbi.py       # -> data/raw/rbi/  + sidecar   (SEC 10-Ks ship under data/raw/sec/)
+
+   python -m src.index_build --corpus all      # or: --corpus sec | nasa | rbi
+   ```
+
+2. **Launch the UI:**
+
+   ```bash
+   streamlit run app/streamlit_app.py
+   ```
+
+   It opens at <http://localhost:8501>.
+
+3. **Use it:** pick a corpus (Airlines 10-K / NASA / RBI) in the sidebar, choose
+   **Single-shot** or **Agent** mode, optionally scope 10-K answers by company/year,
+   and ask a question. Answers are grounded and cited — expand **Sources** to see the
+   passages used.
+
+### First-run notes
+
+- The first launch **downloads the BGE-M3 embedding + reranker models** (~a couple GB)
+  from Hugging Face — one-time, cached under `~/.cache/huggingface`.
+- The **first question per corpus builds that corpus's BM25 index in memory** (~30s),
+  then it's cached for the process.
+- Local Qdrant is **single-writer**: don't run the eval while the app is open (or vice
+  versa) — both need to open `storage/qdrant`.
+
+## CLI & evaluation
 
 ```bash
-# 1. (one-time) fetch source docs
-python fetch_nasa.py                     # -> data/raw/nasa/ + sidecar
-python fetch_rbi.py                      # -> data/raw/rbi/  + sidecar
-#    (SEC 10-Ks already under data/raw/sec/{TICKER}/)
-
-# 2. sanity-check ingest/chunking for a corpus
-python -m src.ingest nasa
-
-# 3. build a corpus's vector index (re-embeds its chunks; safe to re-run)
-python -m src.index_build --corpus all   # or: --corpus sec | nasa | rbi
-
-# 4. query from the CLI (defaults to the SEC corpus)
+# query from the CLI (defaults to the SEC corpus)
 python -m src.retrieve                   # retrieval only
 python -m src.generate                   # full grounded + cited answer
 
-# 5. multi-step agent (e.g. "compare Delta vs United fuel hedging 2024")
+# multi-step agent (e.g. "compare Delta vs United fuel hedging 2024")
 python -m src.agent
 
-# 6. the UI (pick the corpus from the sidebar)
-streamlit run app/streamlit_app.py
+# sanity-check ingest/chunking for a corpus
+python -m src.ingest nasa
 
 # evaluation (several judge-LLM calls per question)
 python -m eval.run_eval                  # full run  -> eval/results.csv
