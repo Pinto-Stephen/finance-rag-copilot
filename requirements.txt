@@ -23,6 +23,7 @@ ragas==0.4.3
 # --- App / IO ---
 streamlit
 python-dotenv
+pymupdf                              # preferred PDF text extraction (NASA/RBI); pypdf is the fallback
 pypdf
 lxml
 beautifulsoup4~=4.15.0

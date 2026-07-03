@@ -1,2 +1,4 @@
 storage
 .env
+fetch_nasa.py
+fetch_rbi.py
