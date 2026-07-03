@@ -19,6 +19,43 @@ YEARS = ["All", 2021, 2022, 2023, 2024, 2025]
 # display label -> corpus key, in registry order (SEC first, so it's the default).
 CORPUS_OPTIONS = {cfg["display_name"]: key for key, cfg in CORPORA.items()}
 
+# Hardcoded per-corpus intro pushed into the chat when a corpus is selected: what the
+# corpus contains plus example questions, so the user knows what they can ask.
+CORPUS_INTROS = {
+    "sec": (
+        "👋 **Airlines 10-K** — annual **10-K filings (FY2021–2025)** from five US "
+        "airlines: Delta (DAL), United (UAL), American (AAL), Southwest (LUV) and "
+        "Alaska (ALK). Ask about fuel hedging, fleets and aircraft orders, liquidity and "
+        "debt, labor and unions, competition, or loyalty programs. Use the sidebar to "
+        "scope answers to a specific company or fiscal year.\n\n"
+        "**Try asking:**\n"
+        "- What did Delta say about its fuel hedging strategy?\n"
+        "- How does United describe its fleet and hubs?\n"
+        "- What competitive risks does Southwest identify?"
+    ),
+    "nasa": (
+        "👋 **NASA Reports** — NASA **technical reports on aircraft fuel efficiency and "
+        "propulsion**, from the 1970s Aircraft Energy Efficiency (ACEE) program through "
+        "modern electrified-propulsion research. Ask about turboprops and propfans, "
+        "supercritical wings, geared turbofans, composite structures, or hydrogen and "
+        "fuel-cell aircraft concepts.\n\n"
+        "**Try asking:**\n"
+        "- What was NASA's Aircraft Energy Efficiency (ACEE) program?\n"
+        "- How does a supercritical wing improve fuel efficiency?\n"
+        "- What is CHEETA and how does it use liquid hydrogen?"
+    ),
+    "rbi": (
+        "👋 **RBI Circulars** — Reserve Bank of India **master circulars and directions "
+        "on banking regulation**. Ask about non-performing asset (NPA) classification and "
+        "provisioning, Basel III capital adequacy, exposure norms, wilful defaulters, or "
+        "credit information companies.\n\n"
+        "**Try asking:**\n"
+        "- When is a loan classified as a non-performing asset (NPA)?\n"
+        "- What is the minimum capital adequacy ratio under Basel III?\n"
+        "- How does the RBI define a wilful defaulter?"
+    ),
+}
+
 
 @st.cache_resource(show_spinner="Loading index, embeddings and reranker...")
 def get_index(corpus):
@@ -71,6 +108,7 @@ with st.sidebar:
         st.caption("Filters apply to every question. 'All' means no filter.")
     if st.button("Clear conversation"):
         st.session_state.messages = []
+        st.session_state.active_corpus = None   # re-show the corpus intro after clearing
         st.rerun()
 
 # Filters only meaningful for SEC; force them off for other corpora regardless of the
@@ -135,6 +173,14 @@ def render_sources(sources):
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+# When the selected corpus changes (including first load), push a hardcoded intro
+# message so the user sees what the corpus contains and example questions to ask.
+if st.session_state.get("active_corpus") != corpus:
+    st.session_state.active_corpus = corpus
+    st.session_state.messages.append(
+        {"role": "assistant", "content": CORPUS_INTROS[corpus], "sources": []}
+    )
 
 # Replay history (including each answer's sources).
 for m in st.session_state.messages:
